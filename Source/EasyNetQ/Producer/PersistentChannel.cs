@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using EasyNetQ.AmqpExceptions;
 using EasyNetQ.Events;
 using RabbitMQ.Client;
@@ -155,6 +157,7 @@ namespace EasyNetQ.Producer
             eventBus.Publish(MessageConfirmationEvent.Nack((IModel)sender, args.DeliveryTag, args.Multiple));
         }
 
+        private static long _incompleteDisposes = 0;
         private void CloseChannel()
         {
             lock (this)
@@ -169,8 +172,26 @@ namespace EasyNetQ.Producer
                     internalChannel.BasicNacks -= OnNack;
                 }
                 internalChannel.BasicReturn -= OnReturn;
+                //trying close
+                internalChannel.Close();
+
                 // Fix me: use Dispose instead of SafeDispose after update of Rabbitmq.Client to 3.5.5
-                internalChannel.SafeDispose();
+                //internalChannel.SafeDispose();
+
+
+                //var closeChannel = internalChannel;
+                //Task.Factory.StartNew(() =>
+                //{
+                //    Stopwatch w = new Stopwatch();
+                //    _incompleteDisposes++;
+                //    w.Start();
+                //    closeChannel.Dispose();
+                //    w.Stop();
+                //    _incompleteDisposes--;
+                //    logger.InfoWrite("Dispose took: " + w.ElapsedMilliseconds);
+                //    logger.InfoWrite("Incomplete disposes: " + _incompleteDisposes);
+                //});
+
                 internalChannel = null;
             }
 
