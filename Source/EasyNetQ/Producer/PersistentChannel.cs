@@ -172,13 +172,15 @@ namespace EasyNetQ.Producer
                     internalChannel.BasicNacks -= OnNack;
                 }
                 internalChannel.BasicReturn -= OnReturn;
-                //trying close
-                internalChannel.Close();
 
+                //@sivesind: trying Close(), as advised by https://github.com/rabbitmq/rabbitmq-dotnet-client/issues/154
+                //internalChannel.Close();
+
+                //@sivesind: stock EasyNetQ code below
                 // Fix me: use Dispose instead of SafeDispose after update of Rabbitmq.Client to 3.5.5
-                //internalChannel.SafeDispose();
-
-
+                internalChannel.SafeDispose();
+                
+                //@sivesind: experimental fix with off-thread disposal
                 //var closeChannel = internalChannel;
                 //Task.Factory.StartNew(() =>
                 //{
