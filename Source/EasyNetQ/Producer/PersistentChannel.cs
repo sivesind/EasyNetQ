@@ -178,7 +178,7 @@ namespace EasyNetQ.Producer
 
                 //@sivesind: stock EasyNetQ code below
                 // Fix me: use Dispose instead of SafeDispose after update of Rabbitmq.Client to 3.5.5
-                internalChannel.SafeDispose();
+                //internalChannel.SafeDispose();
                 
                 //@sivesind: experimental fix with off-thread disposal
                 //var closeChannel = internalChannel;
